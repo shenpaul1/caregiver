@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>照顧者心靈雞湯 - 冥想與呼吸</title>
+    <title>照顧者心靈雞湯 - 情緒急救站</title>
     <style>
         :root {
             --bg-color: #F3E5F5;
             --primary-purple: #9575CD;
             --dark-purple: #5E35B1;
-            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.85);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-            overflow: hidden; display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden; display: flex; justify-content: center; align-items: center;
             background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
         }
 
@@ -27,52 +27,68 @@
         .video-background.active { opacity: 0.5; }
         iframe { width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* 控制按鈕 */
-        .controls { position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; }
+        /* 控制按鈕 (右上角) */
+        .controls { position: fixed; top: 15px; right: 15px; display: flex; gap: 10px; z-index: 100; }
         .ctrl-btn {
-            background: rgba(255, 255, 255, 0.7); border: 1px solid white;
-            width: 45px; height: 45px; border-radius: 50%; cursor: pointer;
-            font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
+            background: rgba(255, 255, 255, 0.8); border: 1px solid white;
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            font-size: 1.1rem; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s;
         }
 
-        /* 卡片主體 */
+        /* 卡片主體 - 針對手機優化 */
         .card {
-            background: var(--glass-bg); padding: 40px 25px; border-radius: 35px;
+            background: var(--glass-bg); padding: 25px 20px; border-radius: 30px;
             box-shadow: 0 15px 35px rgba(103, 58, 183, 0.15); text-align: center;
-            max-width: 380px; width: 85%; border: 2px solid white;
+            max-width: 380px; width: 88%; border: 2px solid white;
             backdrop-filter: blur(12px); z-index: 10; position: relative;
+            max-height: 90vh; overflow-y: auto; /* 螢幕太小時可滑動 */
         }
+        /* 隱藏滾動條但保留功能 */
+        .card::-webkit-scrollbar { display: none; }
+
+        h1 { font-size: 1.2rem; color: var(--dark-purple); margin-bottom: 15px; margin-top: 5px;}
+
+        /* 🔥 情緒分類標籤 (手機版面最佳化) */
+        .emotion-menu {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 20px;
+        }
+        .tag {
+            background: rgba(255, 255, 255, 0.6); border: 1px solid var(--primary-purple);
+            color: var(--dark-purple); padding: 6px 12px; border-radius: 20px;
+            font-size: 0.85rem; cursor: pointer; transition: all 0.3s;
+        }
+        .tag.active {
+            background: var(--primary-purple); color: white;
+            box-shadow: 0 3px 8px rgba(149, 117, 205, 0.4); border-color: var(--primary-purple);
+        }
+
+        /* 語錄顯示區 */
+        #quote-container { min-height: 120px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; padding: 0 10px;}
+        #quote { font-size: 1.1rem; line-height: 1.7; transition: opacity 0.5s; font-weight: 500; color: #4527A0; }
 
         /* 呼吸計時器樣式 */
         #breath-section { display: none; margin: 20px 0; }
-        .breath-circle-wrap {
-            width: 150px; height: 150px; margin: 0 auto;
-            position: relative; display: flex; align-items: center; justify-content: center;
-        }
+        .breath-circle-wrap { width: 140px; height: 140px; margin: 0 auto; position: relative; display: flex; align-items: center; justify-content: center; }
         .breath-circle {
-            width: 60px; height: 60px; background: var(--primary-purple);
-            border-radius: 50%; opacity: 0.6;
-            box-shadow: 0 0 20px var(--primary-purple);
-            transition: all 4s linear; /* 透過 JS 動態控制速度 */
+            width: 50px; height: 50px; background: var(--primary-purple);
+            border-radius: 50%; opacity: 0.6; box-shadow: 0 0 20px var(--primary-purple);
+            transition: all 4s linear;
         }
-        #breath-text { margin-top: 20px; font-size: 1.3rem; color: var(--dark-purple); font-weight: bold; }
+        #breath-text { margin-top: 25px; font-size: 1.2rem; color: var(--dark-purple); font-weight: bold; }
 
-        /* 語錄樣式 */
-        #quote-container { min-height: 140px; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; }
-        #quote { font-size: 1.15rem; line-height: 1.8; transition: opacity 0.6s; }
-
+        /* 主要按鈕 */
         .main-btn {
             background-color: var(--primary-purple); color: white; border: none;
-            padding: 15px 30px; border-radius: 50px; font-size: 1rem;
-            cursor: pointer; box-shadow: 0 6px 15px rgba(149, 117, 205, 0.3); width: 100%;
+            padding: 14px 20px; border-radius: 50px; font-size: 1rem;
+            cursor: pointer; box-shadow: 0 6px 15px rgba(149, 117, 205, 0.3); width: 100%; transition: 0.3s;
         }
         .secondary-btn {
             background: none; border: 1px solid var(--primary-purple); color: var(--primary-purple);
-            margin-top: 15px; padding: 10px; border-radius: 50px; width: 100%; cursor: pointer;
+            margin-top: 12px; padding: 10px; border-radius: 50px; width: 100%; cursor: pointer; font-size: 0.9rem;
         }
 
-        footer { margin-top: 25px; font-size: 0.7rem; color: #7E57C2; opacity: 0.7; }
+        footer { margin-top: 20px; font-size: 0.7rem; color: #7E57C2; opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -90,10 +106,21 @@
 
 <div class="card">
     <div id="content-section">
-        <span style="font-size: 2.5rem;">🪻</span>
-        <h1>親愛的，請給自己一點空間</h1>
+        <h1>你想點哪碗湯？</h1>
+        
+        <!-- 情緒標籤選單 -->
+        <div class="emotion-menu" id="menu">
+            <button class="tag active" onclick="setEmotion('all', this)">🎲 隨機抽</button>
+            <button class="tag" onclick="setEmotion('angry', this)">🔥 覺得生氣</button>
+            <button class="tag" onclick="setEmotion('powerless', this)">🥀 感到無力</button>
+            <button class="tag" onclick="setEmotion('anxious', this)">🌪️ 焦慮不安</button>
+            <button class="tag" onclick="setEmotion('tired', this)">🔋 極度疲憊</button>
+        </div>
+
         <div id="quote-container"><div id="quote">深呼吸，準備好進入平靜了嗎？</div></div>
-        <button class="main-btn" onclick="getNewQuote()">換一句暖心語錄</button>
+        
+        <!-- 按鈕文字會隨情緒改變 -->
+        <button class="main-btn" id="draw-btn" onclick="getNewQuote()">換一句暖心語錄</button>
     </div>
 
     <div id="breath-section">
@@ -104,12 +131,12 @@
         <div id="breath-text">準備開始...</div>
     </div>
 
-    <button class="secondary-btn" id="mode-btn" onclick="toggleMode()">切換至冥想呼吸模式</button>
-    <footer>薰衣草影音站 ‧ 您的靜心角落</footer>
+    <button class="secondary-btn" id="mode-btn" onclick="toggleMode()">切換至「冥想呼吸」</button>
+    <footer>薰衣草影音站 ‧ 情緒急救角落</footer>
 </div>
 
 <script>
-    // 1. 基礎設定
+    // 1. 基礎設定與控制 (音樂/影片/模式)
     const bgm = document.getElementById('bgm');
     const musicBtn = document.getElementById('music-btn');
     let isPlaying = false;
@@ -121,13 +148,10 @@
         else { bgm.play(); musicBtn.innerText = "🔊"; }
         isPlaying = !isPlaying;
     }
-
     function toggleVideo() {
         isVideoActive = !isVideoActive;
         document.getElementById('videoLayer').classList.toggle('active', isVideoActive);
     }
-
-    // 2. 模式切換
     function toggleMode() {
         isBreathMode = !isBreathMode;
         const content = document.getElementById('content-section');
@@ -135,82 +159,115 @@
         const modeBtn = document.getElementById('mode-btn');
 
         if (isBreathMode) {
-            content.style.display = 'none';
-            breath.style.display = 'block';
-            modeBtn.innerText = '切換回暖心語錄';
-            startBreathing();
+            content.style.display = 'none'; breath.style.display = 'block';
+            modeBtn.innerText = '返回「情緒急救站」'; startBreathing();
         } else {
-            content.style.display = 'block';
-            breath.style.display = 'none';
-            modeBtn.innerText = '切換至冥想呼吸模式';
-            stopBreathing();
+            content.style.display = 'block'; breath.style.display = 'none';
+            modeBtn.innerText = '切換至「冥想呼吸」'; stopBreathing();
         }
     }
 
-    // 3. 呼吸計時器邏輯 (4-4-8 節奏)
+    // 2. 呼吸計時器
     let breathInterval;
     function startBreathing() {
         const circle = document.getElementById('circle');
         const text = document.getElementById('breath-text');
-        
         const runCycle = () => {
-            // 吸氣 4s
             text.innerText = "吸氣... (4秒)";
-            circle.style.transition = "all 4s ease-out";
-            circle.style.transform = "scale(2.5)";
-            circle.style.opacity = "1";
-
+            circle.style.transition = "all 4s ease-out"; circle.style.transform = "scale(2.4)"; circle.style.opacity = "1";
             setTimeout(() => {
-                // 憋氣 4s
                 text.innerText = "暫停... (4秒)";
                 setTimeout(() => {
-                    // 吐氣 8s
                     text.innerText = "緩慢吐氣... (8秒)";
-                    circle.style.transition = "all 8s ease-in";
-                    circle.style.transform = "scale(1)";
-                    circle.style.opacity = "0.4";
+                    circle.style.transition = "all 8s ease-in"; circle.style.transform = "scale(1)"; circle.style.opacity = "0.4";
                 }, 4000);
             }, 4000);
         };
-
         runCycle();
-        breathInterval = setInterval(runCycle, 16500); // 總循環約 16秒
+        breathInterval = setInterval(runCycle, 16500);
     }
-
     function stopBreathing() {
         clearInterval(breathInterval);
         document.getElementById('circle').style.transform = "scale(1)";
     }
 
-    // 4. 語錄資料 (500句架構)
-    const quotes = [
-        "你可以累，這完全沒有問題。", "不完美也沒關係，你已經盡力了。", "今天沒做完的事，就留給明天吧。", "你是照顧者，也是需要被呵護的孩子。", "哭出來也沒關係，眼淚能洗滌壓力。", 
-        "你不需要背負所有人的情緒。", "拒絕不合理的請求，是在保護你的能量。", "你的價值，不取決於你做了多少事。", "允許自己有負面情緒，那是真實的你。", "累了就睡一會，夢裡沒有壓力和責任。",
-        // --- 呼吸與空間 ---
-        "現在，請跟我一起深呼吸：吸氣，吐氣。", "閉上眼，讓肩膀放鬆三秒鐘。", "這分鐘，你只需要照顧你的呼吸。", "感覺腳掌踩在地板上的踏實感。", "把手放在心口，感受自己的心跳。", 
-        "壓力像雲，會飄過，不會永遠停留。", "現在的你，是安全的，放鬆下來。", "吐氣時，想像把所有的緊繃都吐出去。", "試著放空大腦，只聽周圍的聲音。", "你不需要現在就解決所有問題。",
-        // --- 自我肯定 ---
-        "你現在所做的一切，是這世界上最溫柔的承擔。", "你的陪伴，就是最良效的藥方。", "不一定要做到完美，你的用心就是最好的照顧。", "因為有你，這段路才不顯得那麼孤單。", "你是一個充滿愛與力量的人。",
-        // --- 幽默與轉念 ---
-        "今天的脂肪也辛苦了，它們幫你吸收了好多壓力。", "如果不開心，就去吃點甜的，讓生活變甜一點。", "天塌下來當棉被蓋，我們先睡一覺再說。", "你不是超人，你是偽裝成凡人的天使，累了正常。", "今天的挑戰已過期，請領取明天的勇氣。",
-        // --- 補充至 500 句的邏輯 (以下為示範，實際應用時可無限增加) ---
-        "你比你想像中更強大，也比你以為的更柔軟。", "給自己一個長長的吻，或者一個大大的擁抱。", "陽光照在每個人身上，也包括辛苦的你。", "不要為了昨天的錯誤，懲罰今天的自己。", "每一朵花都有自己的花期，你也一樣。",
-        "照顧好自己的情緒，是最高級的自律。", "在忙碌中，別忘了那個愛笑的自己。", "心靈的平靜，是這世界上最昂貴的奢侈品。", "你是你生命的主角，請記得愛自己。", "聽，心跳的聲音在說：謝謝你照顧我。",
-        "世界很大，但你的心可以很安靜。", "放下手機，看一眼窗外的綠色。", "熱水澡能洗去灰塵，也能洗去疲憊。", "你不需要做得更好，你現在就很好。", "愛，是從照顧自己開始的。",
-        "每一滴汗水，都是守護家人的珍珠。", "你的溫柔，是黑暗中最穩定的光。", "給靈魂一個深呼吸的機會。", "不要讓別人的期待，壓垮了你的光芒。", "今天，你最重要。"
-        // (註：為節省篇幅，此處列出核心架構。您可以將之前的200句全數補入此陣列，並按此節奏複製擴充)
-        // ... 此處可持續擴充
-    ];
+    // 3. 情緒分類語錄資料庫 (Dictionary / Object 格式)
+    const quotesDB = {
+        angry: [
+            "生氣是因為你在乎。允許自己憤怒，但別讓它灼傷了你。",
+            "退後一步。現在的你需要的是一杯冷水和三分鐘的獨處。",
+            "不合理的對待讓人憤怒。你的生氣是合理的，你沒有錯。",
+            "把怒氣化為長長的一口吐息。把不甘心隨著空氣吐掉。",
+            "生氣很耗體力。先冷靜下來，保留力氣給值得的人事物。"
+        ],
+        powerless: [
+            "覺得無力時，就先什麼都別做吧。世界不會因此崩塌。",
+            "你不需要拯救全世界，你只需要在今天活下來就好。",
+            "無法改變病情，但你可以改變自己看待每一天的眼光。",
+            "承認自己「沒辦法了」，不是軟弱，而是極大的勇氣。",
+            "現在的無力感，是因為你已經撐了太久太久。"
+        ],
+        anxious: [
+            "焦慮是因為大腦在擔心未來。把心收回來，摸摸你身邊的桌子或水杯。",
+            "我們只解決今天能解決的問題，明天的煩惱明天再說。",
+            "這一切都會過去的，就像以前每一次的難關一樣。",
+            "你不需要立刻得出答案。允許現在有片刻的空白。",
+            "把肩膀放下來。你現在很安全，沒有人在催你。"
+        ],
+        tired: [
+            "去睡吧。哪怕只有十分鐘，閉上眼睛也是對身體的慈悲。",
+            "你不是機器，你的身體正在對你發出求救訊號，聽聽它的聲音。",
+            "放下那該死的完美主義，今天的你只需要及格就好。",
+            "喝一杯溫水，揉揉酸痛的肩膀。你真的辛苦了。",
+            "別再為別人付出了，接下來的十分鐘，請自私一點。"
+        ]
+    };
+
+    // 自動合併所有語錄到 'all' 分類中
+    quotesDB.all = [];
+    for (let key in quotesDB) {
+        if (key !== 'all') {
+            quotesDB.all = quotesDB.all.concat(quotesDB[key]);
+        }
+    }
+
+    // 4. 情緒切換與抽取邏輯
+    let currentEmotion = 'all';
+
+    function setEmotion(emotion, btnElement) {
+        currentEmotion = emotion;
+        
+        // 移除所有標籤的 active 狀態，並把點擊的標籤設為 active
+        const tags = document.querySelectorAll('.tag');
+        tags.forEach(tag => tag.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        // 改變主按鈕的文字，增加互動感
+        const drawBtn = document.getElementById('draw-btn');
+        if(emotion === 'angry') drawBtn.innerText = "🔥 降溫一下";
+        else if(emotion === 'powerless') drawBtn.innerText = "🥀 找回一點力量";
+        else if(emotion === 'anxious') drawBtn.innerText = "🌪️ 讓我平靜";
+        else if(emotion === 'tired') drawBtn.innerText = "🔋 幫我充電";
+        else drawBtn.innerText = "🎲 換一句暖心語錄";
+
+        // 切換情緒時自動抽一張
+        getNewQuote();
+    }
 
     function getNewQuote() {
         const q = document.getElementById('quote');
-        q.style.opacity = 0;
+        const arrayToUse = quotesDB[currentEmotion];
+        
+        q.style.opacity = 0; // 淡出
+        
         setTimeout(() => {
-            q.innerText = quotes[Math.floor(Math.random() * quotes.length)];
-            q.style.opacity = 1;
-        }, 600);
+            const randomIndex = Math.floor(Math.random() * arrayToUse.length);
+            q.innerText = arrayToUse[randomIndex];
+            q.style.opacity = 1; // 淡入
+        }, 500);
     }
 
+    // 網頁載入時自動抽一句
     window.onload = getNewQuote;
 </script>
 
